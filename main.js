@@ -89,18 +89,24 @@ const createWindow = () => {
       contextIsolation: false
     }
   })
+  global.win = win
   
   win.setIcon(nativeImage.createFromDataURL(icons.app))
-  win.loadFile('index.html')
+  win.loadFile('index.html').then(() => {
+    global.sendTrayEvent('Item3')
+  })
   //win.webContents.openDevTools()
 
-  global.win = win
+}
+
+global.sendTrayEvent = function(label) {
+  const msg = "message for tray menu select " + label
+  console.log(msg)
+  global.win.webContents.send('tray_menu_change', label, msg)
 }
 
 global.trayListener = function(e) {
-  const msg = "message for tray menu select " + e.label
-  console.log(msg)
-  global.win.webContents.send('tray_menu_change', e.label, msg)
+  global.sendTrayEvent(e.label)
 }
 
 app.whenReady().then(() => {
