@@ -77,6 +77,7 @@ ipcMain.handle('model_open_button', async (event, data) => { return await global
 ipcMain.handle('model_cancel_button', async (event, data) => { return await global.model_cancel_button_clicked() })
 ipcMain.handle('model_save_button', async (event, data) => { return await global.model_save_button_clicked() })
 
+
 const createWindow = () => {
   const win = new BrowserWindow({
     width: 1024,
@@ -88,10 +89,18 @@ const createWindow = () => {
       contextIsolation: false
     }
   })
-
+  
   win.setIcon(nativeImage.createFromDataURL(icons.app))
   win.loadFile('index.html')
   //win.webContents.openDevTools()
+
+  global.win = win
+}
+
+global.trayListener = function(e) {
+  const msg = "message for tray menu select " + e.label
+  console.log(msg)
+  global.win.webContents.send('tray_menu_change', e.label, msg)
 }
 
 app.whenReady().then(() => {
@@ -99,14 +108,15 @@ app.whenReady().then(() => {
   tray = new Tray(nativeImage.createFromDataURL(icons.tray))
 
   const contextMenu = Menu.buildFromTemplate([
-    { label: 'Item1', type: 'radio' },
-    { label: 'Item2', type: 'radio' },
-    { label: 'Item3', type: 'radio', checked: true },
-    { label: 'Item4', type: 'radio' }
+    { label: 'Item1', type: 'radio', click: global.trayListener },
+    { label: 'Item2', type: 'radio', click: global.trayListener },
+    { label: 'Item3', type: 'radio', checked: true, click: global.trayListener },
+    { label: 'Item4', type: 'radio', click: global.trayListener }
   ])
 
   tray.setToolTip('go ducks')
   tray.setContextMenu(contextMenu)
-
+  tray.setIgnoreDoubleClickEvents(true)
+  
   createWindow()
 })

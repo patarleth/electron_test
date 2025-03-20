@@ -29,4 +29,7 @@ window.onload = function(e) {
             console.log(id +' not found')
         }
     })
+    ipcRenderer.on('tray_menu_change', function(e, trayMenuLabel, msg) {
+        alertBox.innerHTML = trayMenuLabel + ': ' + msg
+    })
 }
