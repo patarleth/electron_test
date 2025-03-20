@@ -91,7 +91,7 @@ const createWindow = () => {
 
   win.setIcon(nativeImage.createFromDataURL(icons.app))
   win.loadFile('index.html')
-  win.webContents.openDevTools()
+  //win.webContents.openDevTools()
 }
 
 app.whenReady().then(() => {
